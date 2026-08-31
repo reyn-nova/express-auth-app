@@ -73,7 +73,7 @@ JWT_SECRET=${jwt_secret}
 JWT_EXPIRES_IN=1d
 COOKIE_NAME=access_token
 COOKIE_SECURE=true
-CORS_ORIGIN=http://${PUBLIC_IP}
+CORS_ORIGIN=http://$$PUBLIC_IP
 EOF
 
 # Run the container with host network
