@@ -7,8 +7,6 @@ build/
 *.tsbuildinfo
 
 # Environment variables
-.env
-.env.local
 .env.*.local
 !.env.example
 
@@ -28,7 +26,6 @@ coverage/
 Thumbs.db
 
 # Editor / IDE
-.vscode/
 .idea/
 *.swp
 *.swo
@@ -59,3 +56,4 @@ terraform/terraform.tfvars
 terraform/*.tfplan
 terraform/*.backup
 terraform/*.log
+config.bat
