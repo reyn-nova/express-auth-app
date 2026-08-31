@@ -133,3 +133,42 @@ See `.env.example` for the full list: app port, Postgres connection, `JWT_SECRET
 npm run migration:generate -- src/migrations/InitialSchema
 npm run migration:run
 ```
+
+## AWS Deployment (Terraform)
+
+Infrastructure is managed with Terraform in the `terraform/` directory. Each environment (staging/production) gets its own EC2 instance running the app via Docker.
+
+### Prerequisites
+
+- AWS CLI configured
+- Terraform >= 1.0
+- An EC2 key pair in `ap-northeast-2`
+
+### Deploy
+
+```bash
+cd terraform
+cp example.tfvars terraform.tfvars   # fill in your values
+terraform init
+terraform apply
+```
+
+This provisions:
+- VPC + public subnet + internet gateway
+- Security group (ports 22, 80)
+- EC2 `t4g.micro` (AL2023 arm64) with Docker
+- PostgreSQL 16 + `uuid-ossp` extension
+- App cloned from GitHub, built, and run via Docker on port 80
+
+### Auto-deploy (staging)
+
+Pushes to the `staging` branch trigger GitHub Actions to SSH into the staging instance, pull, rebuild, and restart the container.
+
+Required GitHub secrets:
+
+| Secret | Value |
+|--------|-------|
+| `AWS_ACCESS_KEY_ID` | AWS access key |
+| `AWS_SECRET_ACCESS_KEY` | AWS secret key |
+| `AWS_REGION` | `ap-northeast-2` |
+| `SSH_PRIVATE_KEY` | Contents of your `.pem` key file |
