@@ -6,11 +6,23 @@ terraform {
       source  = "hashicorp/aws"
       version = "~> 5.0"
     }
+    http = {
+      source  = "hashicorp/http"
+      version = "~> 3.0"
+    }
   }
 }
 
 provider "aws" {
   region = var.aws_region
+}
+
+data "http" "my_ip" {
+  url = "https://checkip.amazonaws.com"
+}
+
+locals {
+  my_ip = trimspace(data.http.my_ip.response_body)
 }
 
 data "aws_ami" "al2023" {
@@ -92,7 +104,7 @@ resource "aws_security_group" "app" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["${var.my_ip}/32"]
+    cidr_blocks = ["${local.my_ip}/32"]
   }
 
   egress {
@@ -109,7 +121,7 @@ resource "aws_security_group" "app" {
 
 resource "aws_instance" "staging" {
   ami                    = data.aws_ami.al2023.id
-  instance_type          = "t4g.nano"
+  instance_type          = "t4g.micro"
   subnet_id              = aws_subnet.public.id
   vpc_security_group_ids = [aws_security_group.app.id]
   key_name               = var.key_name
@@ -125,7 +137,7 @@ resource "aws_instance" "staging" {
     cors_origin  = var.cors_origin
     node_env     = "staging"
     git_repo     = var.git_repo
-    git_branch   = var.git_branch
+    git_branch   = "staging"
   })
 
   tags = {
@@ -136,7 +148,7 @@ resource "aws_instance" "staging" {
 
 resource "aws_instance" "production" {
   ami                    = data.aws_ami.al2023.id
-  instance_type          = "t4g.nano"
+  instance_type          = "t4g.micro"
   subnet_id              = aws_subnet.public.id
   vpc_security_group_ids = [aws_security_group.app.id]
   key_name               = var.key_name
@@ -152,7 +164,7 @@ resource "aws_instance" "production" {
     cors_origin  = var.cors_origin
     node_env     = "production"
     git_repo     = var.git_repo
-    git_branch   = var.git_branch
+    git_branch   = "production"
   })
 
   tags = {

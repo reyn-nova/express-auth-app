@@ -4,11 +4,6 @@ variable "aws_region" {
   default     = "ap-northeast-2"
 }
 
-variable "my_ip" {
-  description = "Your IP address for SSH access"
-  type        = string
-}
-
 variable "key_name" {
   description = "Name of the SSH key pair for EC2 instances"
   type        = string
@@ -35,10 +30,4 @@ variable "cors_origin" {
 variable "git_repo" {
   description = "Git repository URL to clone"
   type        = string
-}
-
-variable "git_branch" {
-  description = "Git branch to checkout"
-  type        = string
-  default     = "main"
 }

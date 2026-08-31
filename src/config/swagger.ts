@@ -21,8 +21,8 @@ const options: swaggerJsdoc.Options = {
     },
     servers: [
       {
-        url: `http://localhost:${PORT}`,
-        description: 'Local server',
+        url: `/`,
+        description: 'Current server',
       },
     ],
     tags: [
