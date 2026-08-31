@@ -50,3 +50,12 @@ pids/
 *.pid
 *.seed
 *.pid.lock
+
+# Terraform
+terraform/*.tfstate
+terraform/*.tfstate.*
+terraform/.terraform/
+terraform/terraform.tfvars
+terraform/*.tfplan
+terraform/*.backup
+terraform/*.log
