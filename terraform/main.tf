@@ -134,7 +134,6 @@ resource "aws_instance" "staging" {
   user_data = templatefile("${path.module}/user_data.sh", {
     db_password  = var.db_password
     jwt_secret   = var.jwt_secret
-    cors_origin  = var.cors_origin
     node_env     = "staging"
     git_repo     = var.git_repo
     git_branch   = "staging"
@@ -161,7 +160,6 @@ resource "aws_instance" "production" {
   user_data = templatefile("${path.module}/user_data.sh", {
     db_password  = var.db_password
     jwt_secret   = var.jwt_secret
-    cors_origin  = var.cors_origin
     node_env     = "production"
     git_repo     = var.git_repo
     git_branch   = "production"

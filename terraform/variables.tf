@@ -21,12 +21,6 @@ variable "jwt_secret" {
   sensitive   = true
 }
 
-variable "cors_origin" {
-  description = "Allowed CORS origin"
-  type        = string
-  default     = "*"
-}
-
 variable "git_repo" {
   description = "Git repository URL to clone"
   type        = string
