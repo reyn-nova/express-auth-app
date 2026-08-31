@@ -1,0 +1,43 @@
+name: Deploy to Staging
+
+on:
+  push:
+    branches: [staging]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Get staging instance IP
+        id: instance
+        run: |
+          IP=$(aws ec2 describe-instances \
+            --filters "Name=tag:Name,Values=express-auth-staging" "Name=instance-state-name,Values=running" \
+            --query 'Reservations[].Instances[].PublicIpAddress' \
+            --output text)
+          echo "ip=$IP" >> "$GITHUB_OUTPUT"
+
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ steps.instance.outputs.ip }}
+          username: ec2-user
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd /opt/express-auth-app
+            git pull origin staging
+            docker build -t express-auth-app .
+            docker rm -f express-auth-app 2>/dev/null || true
+            docker run -d \
+              --name express-auth-app \
+              --restart unless-stopped \
+              --network host \
+              --env-file /opt/express-auth-app/.env \
+              express-auth-app
